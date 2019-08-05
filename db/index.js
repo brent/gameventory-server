@@ -63,8 +63,10 @@ db.schema.hasTable('user_games').then((exists) => {
       .createTable('user_games', t => {
         t.uuid('id').notNullable().primary().defaultTo(db.raw("uuid_generate_v4()"));
         t.uuid('user_id').references('id').inTable('users').notNullable();
+        t.uuid('game_id').references('id').inTable('games').notNullable();
         t.timestamp('created_at').defaultTo(db.fn.now());
         t.timestamp('modified_at').defaultTo(db.fn.now());
+        t.index(['user_id', 'game_id']);
     });
   }
 });
@@ -90,10 +92,11 @@ db.schema.hasTable('user_game_tags').then((exists) => {
         t.uuid('id').notNullable().primary().defaultTo(db.raw("uuid_generate_v4()"));
         t.uuid('user_id').references('id').inTable('users').notNullable();
         t.uuid('game_id').references('id').inTable('games').notNullable();
-        t.text('tag_name').notNullable();
+        t.uuid('tag_id').references('id').inTable('tags').notNullable();
         t.integer('tag_hits').notNullable();
         t.timestamp('created_at').defaultTo(db.fn.now());
         t.timestamp('modified_at').defaultTo(db.fn.now());
+        t.index(['user_id', 'game_id', 'tag_id']);
     });
   }
 });
