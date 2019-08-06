@@ -33,18 +33,6 @@ class Game {
     });
   }
 
-  static getAllForUser(userID) {
-    return new Promise((resolve, reject) => {
-      db
-        .select(`${tableName}.*`)
-        .where('user_id', '=', userID)
-        .from(joinTableName)
-        .join(tableName, `${tableName}.id`, `${joinTableName}.game_id`)
-        .then(rows => resolve(rows))
-        .catch(err => reject(err));
-    });
-  }
-
   static create(gameData) {
     return new Promise((resolve, reject) => {
       db
@@ -63,20 +51,6 @@ class Game {
         .catch(err => {
           reject(err);
         });
-    });
-  }
-
-  static createGameForUser(gameID, userID) {
-    return new Promise((resolve, reject) => {
-      db
-        .insert({
-          user_id: userID,
-          game_id: gameID,
-        })
-        .into(joinTableName)
-        .returning('*')
-        .then(rows => resolve(rows[0]))
-        .catch(err => reject(err));
     });
   }
 }

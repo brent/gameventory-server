@@ -27,6 +27,9 @@ router.post('/signup', (req, res) => {
       })
       .catch(err => console.log(err));
   })
+  .then(() => {
+    // create gameventory
+  })
   .catch(err => console.log(err));
 });
 
