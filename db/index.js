@@ -45,13 +45,14 @@ db.schema.hasTable('games').then((exists) => {
       .raw('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"')
       .createTable('games', t => {
         t.uuid('id').notNullable().primary().defaultTo(db.raw("uuid_generate_v4()"));
-        t.integer('igdb_id');
+        t.integer('igdb_id').unique();
         t.text('igdb_name');
         t.integer('igdb_first_release_date');
-        t.text('igdb_cover_url');
+        t.text('igdb_cover_img_id');
         t.text('igdb_summary');
         t.timestamp('created_at').defaultTo(db.fn.now());
         t.timestamp('modified_at').defaultTo(db.fn.now());
+        t.index(['igdb_id']);
     });
   }
 });
@@ -77,9 +78,10 @@ db.schema.hasTable('tags').then((exists) => {
       .raw('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"')
       .createTable('tags', t => {
         t.uuid('id').notNullable().primary().defaultTo(db.raw("uuid_generate_v4()"));
-        t.text('tag_name').notNullable();
+        t.text('tag_name').unique().notNullable();
         t.timestamp('created_at').defaultTo(db.fn.now());
         t.timestamp('modified_at').defaultTo(db.fn.now());
+        t.index('tag_name');
     });
   }
 });
@@ -93,7 +95,6 @@ db.schema.hasTable('user_game_tags').then((exists) => {
         t.uuid('user_id').references('id').inTable('users').notNullable();
         t.uuid('game_id').references('id').inTable('games').notNullable();
         t.uuid('tag_id').references('id').inTable('tags').notNullable();
-        t.integer('tag_hits').notNullable();
         t.timestamp('created_at').defaultTo(db.fn.now());
         t.timestamp('modified_at').defaultTo(db.fn.now());
         t.index(['user_id', 'game_id', 'tag_id']);

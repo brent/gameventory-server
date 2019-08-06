@@ -2,33 +2,15 @@
 
 const db = require('../db');
 const tableName = 'tags';
+const joinTableName = 'user_game_tags';
 
 class Tag {
   static getAll() {
     return new Promise((resolve, reject) => {
-      const fakeData = [
-        {
-          'tagID': 123456789,
-          'tagName': 'tag3',
-          'tagHits': 0,
-        },
-        {
-          'tagID': 123456788,
-          'tagName': 'tag2',
-          'tagHits': 0,
-        },
-        {
-          'tagID': 123456787,
-          'tagName': 'tag1',
-          'tagHits': 0,
-        }
-      ];
-
-      if (fakeData) {
-        resolve(fakeData);
-      } else {
-        reject({ 'error': 'no data' });
-      }
+      db
+        .from(tableName)
+        .then(rows => resolve(rows))
+        .catch(err => reject(err));
     });
   }
 
@@ -37,7 +19,6 @@ class Tag {
       const fakeData = {
         'tagID': id,
         'tagName': 'tag',
-        'tagHits': 0,
       };
 
       if (fakeData) {
@@ -48,8 +29,51 @@ class Tag {
     });
   }
 
-  static createTagForGame(tagName, userId, gameId) {
-    return true;
+  static getAllForUser(userID) {
+    return new Promise((resolve, reject) => {
+      db
+        .where('user_id', '=', userID)
+        .from(joinTableName)
+        .then(rows => resolve(rows))
+        .catch(err => reject(err));
+    });
+  }
+
+  static findByName(tagName) {
+    return new Promise((resolve, reject) => {
+      db
+        .first()
+        .where('tag_name', '=', tagName)
+        .from(tableName)
+        .then(rows => resolve(rows))
+        .catch(err => reject(err));
+    });
+  }
+
+  static createTag(tagName) {
+    return new Promise((resolve, reject) => {
+      db
+        .insert({ tag_name: tagName })
+        .into(tableName)
+        .returning('*')
+        .then(rows => resolve(rows[0]))
+        .catch(err => reject(err));
+    });
+  }
+
+  static createUserTagForGame(userID, tagID, gameID) {
+    return new Promise((resolve, reject) => {
+      db
+        .insert({
+          user_id: userID,
+          tag_id: tagID,
+          game_id: gameID
+        })
+        .into(joinTableName)
+        .returning('*')
+        .then(rows => resolve(rows[0]))
+        .catch(err => reject(err));
+    });
   }
 }
 

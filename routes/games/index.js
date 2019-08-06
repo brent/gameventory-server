@@ -17,6 +17,17 @@ router.get('/:id', (req, res) => {
 });
 
 router.post('/', (req, res) => {
+  const params = {
+    igdb_id: req.body.igdb_id,
+    igdb_name: req.body.igdb_name,
+    igdb_first_release_date: req.body.igdb_first_release_date,
+    igdb_cover_img_id: req.body.igdb_cover_img_id,
+    igdb_summary: req.body.igdb_summary,
+  };
+
+  Game.create(params)
+    .then(data => handleResponse(res, data))
+    .catch(err => console.log(err));
 });
 
 router.put('/:id', (req, res) => {

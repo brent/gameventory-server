@@ -11,12 +11,8 @@ class User {
       db
         .orderBy('id')
         .from(tableName)
-        .then(rows => {
-          resolve(rows);
-        })
-        .catch(err => {
-          reject(err)
-        });
+        .then(rows => resolve(rows))
+        .catch(err => reject(err));
     });
   }
 
@@ -26,12 +22,8 @@ class User {
         .first()
         .from(tableName)
         .where('id', '=', id)
-        .then(rows => {
-          resolve(rows);
-        })
-        .catch(err => {
-          reject(err);
-        });
+        .then(rows => resolve(rows))
+        .catch(err => reject(err));
     });
   }
 
@@ -41,12 +33,8 @@ class User {
         .first()
         .from(tableName)
         .where('username', '=', username)
-        .then(rows => {
-          resolve(rows);
-        })
-        .catch(err => {
-          reject(err);
-        });
+        .then(rows => resolve(rows))
+        .catch(err => reject(err));
     });
   }
 
@@ -63,12 +51,8 @@ class User {
             })
             .into(tableName)
             .returning(['id', 'username'])
-            .then(rows => {
-              resolve(rows[0]);
-            })
-            .catch(err => {
-              reject(err);
-            });
+            .then(rows => resolve(rows[0]))
+            .catch(err => reject(err));
         });
     });
   }
@@ -88,12 +72,8 @@ class User {
             modified_at: db.fn.now()
           })
           .returning('*')
-          .then(rows => {
-            resolve(rows[0]);
-          })
-          .catch(err => {
-            reject(err)
-          });
+          .then(rows => resolve(rows[0]))
+          .catch(err => reject(err));
       });
     });
   }

@@ -17,6 +17,29 @@ router.get('/:id', (req, res) => {
 });
 
 router.post('/', (req, res) => {
+  const tagName = req.body.tagName;
+  const userID = req.body.userID;
+  const gameID = req.body.gameID;
+
+  Tag.createTag(tagName)
+    .then(tagData => {
+      Tag.createUserTagForGame(userID, tagData.id, gameID)
+        .then(data => handleResponse(res, data))
+        .catch(err => console.log(err));
+    })
+    .catch(err => {
+      if (err.code === '23505') {
+        Tag.findByName(tagName)
+          .then(tag => {
+            Tag.createUserTagForGame(userID, tag.id, gameID)
+              .then(data => handleResponse(res, data))
+              .catch(err => console.log(err));
+          })
+          .catch(err => console.log(err));
+      } else {
+        console.log(err);
+      }
+    });
 });
 
 router.put('/:id', (req, res) => {
