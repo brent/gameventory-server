@@ -36,8 +36,10 @@ class Game {
   static getAllForUser(userID) {
     return new Promise((resolve, reject) => {
       db
+        .select(`${tableName}.*`)
         .where('user_id', '=', userID)
         .from(joinTableName)
+        .join(tableName, `${tableName}.id`, `${joinTableName}.game_id`)
         .then(rows => resolve(rows))
         .catch(err => reject(err));
     });
