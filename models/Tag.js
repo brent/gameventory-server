@@ -2,7 +2,7 @@
 
 const db = require('../db');
 const tableName = 'tags';
-const joinTableName = 'user_game_tags';
+const joinTableName = 'users_games_tags';
 
 class Tag {
   static getAll() {

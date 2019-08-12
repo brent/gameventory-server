@@ -25,7 +25,7 @@ router.get('/:id/tags', (req, res) => {
 });
 
 router.get('/:id/games', (req, res) => {
-  Gameventory.getForUser(req.params.id)
+  Gameventory.getForUserWithTags(req.params.id)
     .then(data => handleResponse(res, data))
     .catch(err => console.log(err));
 });

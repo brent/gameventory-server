@@ -57,11 +57,11 @@ db.schema.hasTable('games').then((exists) => {
   }
 });
 
-db.schema.hasTable('user_games').then((exists) => {
+db.schema.hasTable('users_games').then((exists) => {
   if (!exists) {
     return db.schema
       .raw('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"')
-      .createTable('user_games', t => {
+      .createTable('users_games', t => {
         t.uuid('id').notNullable().primary().defaultTo(db.raw("uuid_generate_v4()"));
         t.uuid('user_id').references('id').inTable('users').notNullable();
         t.uuid('game_id').references('id').inTable('games').notNullable();
@@ -86,11 +86,11 @@ db.schema.hasTable('tags').then((exists) => {
   }
 });
 
-db.schema.hasTable('user_game_tags').then((exists) => {
+db.schema.hasTable('users_games_tags').then((exists) => {
   if (!exists) {
     return db.schema
       .raw('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"')
-      .createTable('user_game_tags', t => {
+      .createTable('users_games_tags', t => {
         t.uuid('id').notNullable().primary().defaultTo(db.raw("uuid_generate_v4()"));
         t.uuid('user_id').references('id').inTable('users').notNullable();
         t.uuid('game_id').references('id').inTable('games').notNullable();
