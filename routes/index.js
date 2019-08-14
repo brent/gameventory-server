@@ -10,8 +10,11 @@ router.get('/', (req, res) => {
 });
 
 router.use('/auth', require('./auth'));
-router.use('/posts', requireAuth, require('./posts'));
-router.use('/users', requireAuth, require('./users'));
+//router.use('/posts',         requireAuth, require('./posts'));
+router.use('/users',         require('./users'));
+router.use('/games',         require('./games'));
+router.use('/tags',          require('./tags'));
+router.use('/gameventories', require('./gameventories'));
 
 router.use(errorHandler);
 

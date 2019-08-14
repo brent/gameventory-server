@@ -10,20 +10,6 @@ const db = require('knex')({
   }
 });
 
-db.schema.hasTable('posts').then((exists) => {
-  if (!exists) {
-    return db.schema
-      .raw('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"')
-      .createTable('posts', t => {
-        t.uuid('id').notNullable().primary().defaultTo(db.raw("uuid_generate_v4()"));
-        t.uuid('userId').references('id').inTable('users').notNullable();
-        t.text('content').notNullable();
-        t.timestamp('createdAt').defaultTo(db.fn.now());
-        t.timestamp('modifiedAt').defaultTo(db.fn.now());
-      });
-  }
-});
-
 db.schema.hasTable('users').then((exists) => {
   if (!exists) {
     return db.schema
@@ -33,8 +19,8 @@ db.schema.hasTable('users').then((exists) => {
         t.text('username').notNullable().unique();
         t.text('email').notNullable().unique();
         t.text('password').notNullable();
-        t.timestamp('createdAt').defaultTo(db.fn.now());
-        t.timestamp('modifiedAt').defaultTo(db.fn.now());
+        t.timestamp('created_at').defaultTo(db.fn.now());
+        t.timestamp('modified_at').defaultTo(db.fn.now());
       });
   }
 });
@@ -45,11 +31,76 @@ db.schema.hasTable('tokens').then((exists) => {
       .raw('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"')
       .createTable('tokens', t => {
         t.uuid('id').notNullable().primary().defaultTo(db.raw("uuid_generate_v4()"));
-        t.uuid('userId').references('id').inTable('users').unique();
+        t.uuid('user_id').references('id').inTable('users').unique();
         t.uuid('token');
-        t.timestamp('createdAt').defaultTo(db.fn.now());
-        t.timestamp('modifiedAt').defaultTo(db.fn.now());
+        t.timestamp('created_at').defaultTo(db.fn.now());
+        t.timestamp('modified_at').defaultTo(db.fn.now());
       });
+  }
+});
+
+db.schema.hasTable('games').then((exists) => {
+  if (!exists) {
+    return db.schema
+      .raw('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"')
+      .createTable('games', t => {
+        t.uuid('id').notNullable().primary().defaultTo(db.raw("uuid_generate_v4()"));
+        t.integer('igdb_id').unique();
+        t.text('igdb_name');
+        t.integer('igdb_first_release_date');
+        t.text('igdb_cover_img_id');
+        t.text('igdb_summary');
+        t.timestamp('created_at').defaultTo(db.fn.now());
+        t.timestamp('modified_at').defaultTo(db.fn.now());
+        t.index(['igdb_id']);
+    });
+  }
+});
+
+db.schema.hasTable('users_games').then((exists) => {
+  if (!exists) {
+    return db.schema
+      .raw('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"')
+      .createTable('users_games', t => {
+        t.uuid('id').notNullable().primary().defaultTo(db.raw("uuid_generate_v4()"));
+        t.uuid('user_id').references('id').inTable('users').notNullable();
+        t.uuid('game_id').references('id').inTable('games').notNullable();
+        t.timestamp('created_at').defaultTo(db.fn.now());
+        t.timestamp('modified_at').defaultTo(db.fn.now());
+        t.index(['user_id', 'game_id']);
+        t.unique(['user_id', 'game_id']);
+    });
+  }
+});
+
+db.schema.hasTable('tags').then((exists) => {
+  if (!exists) {
+    return db.schema
+      .raw('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"')
+      .createTable('tags', t => {
+        t.uuid('id').notNullable().primary().defaultTo(db.raw("uuid_generate_v4()"));
+        t.text('tag_name').unique().notNullable();
+        t.timestamp('created_at').defaultTo(db.fn.now());
+        t.timestamp('modified_at').defaultTo(db.fn.now());
+        t.index('tag_name');
+    });
+  }
+});
+
+db.schema.hasTable('users_games_tags').then((exists) => {
+  if (!exists) {
+    return db.schema
+      .raw('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"')
+      .createTable('users_games_tags', t => {
+        t.uuid('id').notNullable().primary().defaultTo(db.raw("uuid_generate_v4()"));
+        t.uuid('user_id').references('id').inTable('users').notNullable();
+        t.uuid('game_id').references('id').inTable('games').notNullable();
+        t.uuid('tag_id').references('id').inTable('tags').notNullable();
+        t.timestamp('created_at').defaultTo(db.fn.now());
+        t.timestamp('modified_at').defaultTo(db.fn.now());
+        t.index(['user_id', 'game_id', 'tag_id']);
+        t.unique(['user_id', 'game_id', 'tag_id']);
+    });
   }
 });
 

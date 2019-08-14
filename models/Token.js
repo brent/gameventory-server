@@ -8,14 +8,14 @@ const JWT_SECRET = process.env.JWT_SECRET;
 const TABLE_NAME = 'tokens';
 
 class Token {
-  static saveTokenForUser(userId) {
+  static saveTokenForUser(userID) {
     const token = Token.generateRefreshToken();
 
     return new Promise((resolve, reject) => {
       db
         .returning('token')
         .insert({
-          userId: userId,
+          user_id: userID,
           token: token,
         })
         .into(TABLE_NAME)
@@ -24,12 +24,12 @@ class Token {
     });
   }
 
-  static findTokenForUser(userId) {
+  static findTokenForUser(userID) {
     return new Promise((resolve, reject) => {
         db
           .first()
           .from(TABLE_NAME)
-          .where('userId', '=', userId)
+          .where('userId', '=', userID)
           .then(rows => resolve(rows['token']))
           .catch(err => reject(err));
     });
@@ -40,7 +40,7 @@ class Token {
   // a user id as well
   static generateAccessToken(user) {
     const params = {
-      userId: user.id,
+      user_id: user.id,
       username: user.username,
     };
 
@@ -60,12 +60,12 @@ class Token {
     });
   }
 
-  static updateRefreshToken(userId, refreshToken) {
+  static updateRefreshToken(userID, refreshToken) {
     return new Promise((resolve, reject) => {
       const newToken = Token.generateRefreshToken();
       db
         .where({
-          'userId': userId,
+          'user_id': userID,
           'token': refreshToken
         })
         .update('token', newToken)
