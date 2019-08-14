@@ -36,19 +36,34 @@ class Game {
   static create(gameData) {
     return new Promise((resolve, reject) => {
       db
-        .insert({
-          igdb_id: gameData.igdb_id,
-          igdb_name: gameData.igdb_name,
-          igdb_first_release_date: gameData.igdb_first_release_date,
-          igdb_cover_img_id: gameData.igdb_cover_img_id,
-          igdb_summary: gameData.igdb_summary,
-        })
-        .into(tableName)
-        .returning('*')
-        .then(rows => {
-          resolve(rows);
+        .raw(`
+          INSERT INTO ${tableName} (
+            igdb_id, 
+            igdb_name, 
+            igdb_first_release_date, 
+            igdb_cover_img_id, 
+            igdb_summary
+          )
+          VALUES (
+            ${gameData.igdb_id}, 
+            '${gameData.igdb_name}', 
+            ${gameData.igdb_first_release_date}, 
+            '${gameData.igdb_cover_img_id}', 
+            '${gameData.igdb_summary}'
+          )
+          ON CONFLICT (igdb_id)
+          DO UPDATE
+          SET 
+            igdb_name = '${gameData.igdb_name}',
+            igdb_cover_img_id = '${gameData.igdb_cover_img_id}',
+            igdb_summary = '${gameData.igdb_summary}'
+          RETURNING *;
+        `)
+        .then(res => {
+          resolve(res.rows);
         })
         .catch(err => {
+          console.log(err);
           reject(err);
         });
     });
