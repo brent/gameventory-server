@@ -36,17 +36,51 @@ class Game {
   static create(gameData) {
     return new Promise((resolve, reject) => {
       db
-        .insert({
-          igdb_id: gameData.igdb_id,
-          igdb_name: gameData.igdb_name,
-          igdb_first_release_date: gameData.igdb_first_release_date,
-          igdb_cover_img_id: gameData.igdb_cover_img_id,
-          igdb_summary: gameData.igdb_summary,
+        .raw(`
+          INSERT INTO ${tableName} (
+            igdb_id,
+            igdb_name,
+            igdb_first_release_date,
+            igdb_cover_img_id,
+            igdb_summary
+          )
+          VALUES ( ?, ?, ?, ?, ?)
+          ON CONFLICT (igdb_id)
+          DO UPDATE
+          SET
+            igdb_name = ?,
+            igdb_cover_img_id = ?,
+            igdb_summary = ?
+          RETURNING *;
+        `,
+          [
+            gameData.igdb_id,
+            gameData.igdb_name,
+            gameData.igdb_first_release_date,
+            gameData.igdb_cover_img_id,
+            gameData.igdb_summary,
+            gameData.igdb_name,
+            gameData.igdb_cover_img_id,
+            gameData.igdb_summary
+          ]
+        )
+        .then(res => {
+          resolve(res.rows);
         })
-        .into(tableName)
-        .returning('*')
-        .then(rows => {
-          resolve(rows);
+        .catch(err => {
+          reject(err);
+        });
+    });
+  }
+
+  static searchByName(str) {
+    return new Promise((resolve, reject) => {
+      db
+        .select('*')
+        .from(tableName)
+        .where('igdb_name', 'ilike', `%${str}%`)
+        .then(res => {
+          resolve(res);
         })
         .catch(err => {
           reject(err);
