@@ -44,26 +44,30 @@ class Game {
             igdb_cover_img_id, 
             igdb_summary
           )
-          VALUES (
-            ${gameData.igdb_id}, 
-            '${gameData.igdb_name}', 
-            ${gameData.igdb_first_release_date}, 
-            '${gameData.igdb_cover_img_id}', 
-            '${gameData.igdb_summary}'
-          )
+          VALUES ( ?, ?, ?, ?, ?)
           ON CONFLICT (igdb_id)
           DO UPDATE
           SET 
-            igdb_name = '${gameData.igdb_name}',
-            igdb_cover_img_id = '${gameData.igdb_cover_img_id}',
-            igdb_summary = '${gameData.igdb_summary}'
+            igdb_name = ?,
+            igdb_cover_img_id = ?,
+            igdb_summary = ?
           RETURNING *;
-        `)
+        `,
+          [
+            gameData.igdb_id,
+            gameData.igdb_name,
+            gameData.igdb_first_release_date,
+            gameData.igdb_cover_img_id,
+            gameData.igdb_summary,
+            gameData.igdb_name,
+            gameData.igdb_cover_img_id,
+            gameData.igdb_summary
+          ]
+        )
         .then(res => {
           resolve(res.rows);
         })
         .catch(err => {
-          console.log(err);
           reject(err);
         });
     });

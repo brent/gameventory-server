@@ -48,10 +48,34 @@ router.post('/search', async (req, res, next) => {
 
     const gameData = igdbRes.data;
 
-    gameData.forEach((game) => {
+    // TODO: below probably belongs in the Game model
+    gameData.forEach((game, i) => {
+      if (
+        !game.cover
+        || !game.summary
+        || !game.name
+        || !game.first_release_date
+        || !game.id
+      ) {
+        gameData.splice(i, 1);
+        return;
+      }
+
+      const params = {
+        igdb_id: game.id,
+        igdb_name: game.name,
+        igdb_first_release_date: game.first_release_date,
+        igdb_cover_img_id: game.cover.image_id,
+        igdb_summary: game.summary
+      };
+
+      Game.create(params)
+        .catch(err => {
+          next(err);
+        });
     });
 
-    handleResponse(res, igdbRes.data);
+    handleResponse(res, gameData);
   } catch (err) {
     next(err);
   }
