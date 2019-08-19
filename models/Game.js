@@ -72,6 +72,21 @@ class Game {
         });
     });
   }
+
+  static searchByName(str) {
+    return new Promise((resolve, reject) => {
+      db
+        .select('*')
+        .from(tableName)
+        .where('igdb_name', 'ilike', `%${str}%`)
+        .then(res => {
+          resolve(res);
+        })
+        .catch(err => {
+          reject(err);
+        });
+    });
+  }
 }
 
 module.exports = Game;

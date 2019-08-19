@@ -39,46 +39,59 @@ router.put('/:id', (req, res) => {
 router.post('/search', async (req, res, next) => {
   const gameName = req.body.gameName;
 
-  try {
-    const igdbRes = await igdbClient
-      .search(gameName)
-      .fields('id,name,cover.*,first_release_date,platforms.*,summary,popularity')
-      .limit(50)
-      .request('/games');
+  Game.searchByName(gameName)
+    .then((data) => {
+      if (data.length > 0) {
+        handleResponse(res, data);
+      } else {
+        igdbClient
+          .search(gameName)
+          .fields('id,name,cover.*,first_release_date,platforms.*,summary,popularity')
+          .limit(50)
+          .request('/games')
+          .then(response => {
+            const gameData = response.data;
 
-    const gameData = igdbRes.data;
+            let gameSavePromises = gameData.map((game, i) => {
+              if (
+                !game.cover
+                || !game.summary
+                || !game.name
+                || !game.first_release_date
+                || !game.id
+              ) {
+                gameData.splice(i, 1);
+                return;
+              }
 
-    // TODO: below probably belongs in the Game model
-    gameData.forEach((game, i) => {
-      if (
-        !game.cover
-        || !game.summary
-        || !game.name
-        || !game.first_release_date
-        || !game.id
-      ) {
-        gameData.splice(i, 1);
-        return;
+              const params = {
+                igdb_id: game.id,
+                igdb_name: game.name,
+                igdb_first_release_date: game.first_release_date,
+                igdb_cover_img_id: game.cover.image_id,
+                igdb_summary: game.summary
+              };
+
+              return new Promise((resolve, reject) => {
+                Game.create(params)
+                  .then(data => resolve(data))
+                  .catch(err => reject(err));
+              });
+            });
+
+            Promise.all(gameSavePromises).then((promises) => {
+              let data = promises.map((promise) => {
+                if (promise) {
+                  return promise[0];
+                }
+              });
+
+              handleResponse(res, data);
+            });
+          });
       }
-
-      const params = {
-        igdb_id: game.id,
-        igdb_name: game.name,
-        igdb_first_release_date: game.first_release_date,
-        igdb_cover_img_id: game.cover.image_id,
-        igdb_summary: game.summary
-      };
-
-      Game.create(params)
-        .catch(err => {
-          next(err);
-        });
-    });
-
-    handleResponse(res, gameData);
-  } catch (err) {
-    next(err);
-  }
+    })
+    .catch(err => next(err));
 });
 
 module.exports = router;
