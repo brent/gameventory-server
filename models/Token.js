@@ -29,7 +29,7 @@ class Token {
         db
           .first()
           .from(TABLE_NAME)
-          .where('userId', '=', userID)
+          .where('user_id', '=', userID)
           .then(rows => resolve(rows['token']))
           .catch(err => reject(err));
     });
