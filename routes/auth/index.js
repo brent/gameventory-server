@@ -33,27 +33,41 @@ router.post('/signup', (req, res) => {
   .catch(err => console.log(err));
 });
 
-router.post('/login', (req, res) => {
+router.post('/login', (req, res, next) => {
   const user = {
     username: req.body.username,
     password: req.body.password,
   };
 
-  User.comparePassword(user).then(user => {
-    Token.findTokenForUser(user.id)
-      .then((refreshToken) => {
-        const jwt = Token.generateAccessToken(user);
-        const data = {
-          user,
-          'access': jwt,
-          'refresh': refreshToken,
-        };
+  User.comparePassword(user)
+    .then(user => {
+      Token.findTokenForUser(user.id)
+        .then((refreshToken) => {
+          const jwt = Token.generateAccessToken(user);
+          const data = {
+            user,
+            'access': jwt,
+            'refresh': refreshToken,
+          };
 
-        handleResponse(res, data);
-      })
-      .catch(err => console.log(err));
-  })
-  .catch(err => console.log(err));
+          handleResponse(res, data);
+        })
+        .catch((err) => {
+          Token.saveTokenForUser(user.id)
+            .then((refreshToken) => {
+              const jwt = Token.generateAccessToken(user);
+              const data = {
+                user,
+                'access': jwt,
+                'refresh': refreshToken,
+              };
+
+              handleResponse(res, data);
+            })
+            .catch(err => next(err));
+        });
+    })
+    .catch(err => next(err));
 });
 
 router.post('/token', (req, res) => {

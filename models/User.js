@@ -110,7 +110,7 @@ class User {
             }
           });
         })
-        .catch(err => console.log(err));
+        .catch(err => reject(err));
     });
   }
 }

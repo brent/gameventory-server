@@ -31,7 +31,7 @@ db.schema.hasTable('tokens').then((exists) => {
       .raw('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"')
       .createTable('tokens', t => {
         t.uuid('id').notNullable().primary().defaultTo(db.raw("uuid_generate_v4()"));
-        t.uuid('user_id').references('id').inTable('users').unique();
+        t.uuid('user_id').references('id').inTable('users').unique().notNullable();
         t.uuid('token');
         t.timestamp('created_at').defaultTo(db.fn.now());
         t.timestamp('modified_at').defaultTo(db.fn.now());
