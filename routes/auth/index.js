@@ -16,7 +16,7 @@ router.post('/signup', (req, res) => {
   User.create(user).then(user => {
     Token.saveTokenForUser(user.id)
       .then((refreshToken) => {
-        const jwt = Token.generateAccessToken(user);
+        const jwt = Token.generateAccessToken(user.id);
         const data = {
           user,
           'access': jwt,
@@ -43,7 +43,7 @@ router.post('/login', (req, res, next) => {
     .then(user => {
       Token.findTokenForUser(user.id)
         .then((refreshToken) => {
-          const jwt = Token.generateAccessToken(user);
+          const jwt = Token.generateAccessToken(user.id);
           const data = {
             user,
             'access': jwt,
@@ -55,7 +55,7 @@ router.post('/login', (req, res, next) => {
         .catch((err) => {
           Token.saveTokenForUser(user.id)
             .then((refreshToken) => {
-              const jwt = Token.generateAccessToken(user);
+              const jwt = Token.generateAccessToken(user.id);
               const data = {
                 user,
                 'access': jwt,
@@ -76,8 +76,9 @@ router.post('/token', (req, res) => {
 
   Token.updateRefreshToken(userId, oldRefreshToken)
     .then((newRefreshToken) => {
-      const jwt = Token.generateAccessToken({ id: userId, username: null});
+      const jwt = Token.generateAccessToken(userId);
       const data = {
+        'userID': userID,
         'access': jwt,
         'refresh': newRefreshToken,
       };

@@ -38,10 +38,9 @@ class Token {
   // TODO: Refactor
   // a token should be generateable with just
   // a user id as well
-  static generateAccessToken(user) {
+  static generateAccessToken(userID) {
     const params = {
-      user_id: user.id,
-      username: user.username,
+      user_id: userID,
     };
 
     const token = jwt.sign(params, JWT_SECRET, { expiresIn: 300 });
