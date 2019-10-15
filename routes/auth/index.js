@@ -71,16 +71,12 @@ router.post('/login', (req, res, next) => {
 });
 
 router.post('/token', (req, res) => {
-  const userId = req.body.userId;
-  const oldRefreshToken = req.body.refreshToken;
+  const refreshToken = req.body.refreshToken;
 
-  Token.updateRefreshToken(userId, oldRefreshToken)
-    .then((newRefreshToken) => {
-      const jwt = Token.generateAccessToken(userId);
+  Token.refreshAccessToken(refreshToken)
+    .then((newAccessToken) => {
       const data = {
-        'userID': userID,
-        'access': jwt,
-        'refresh': newRefreshToken,
+        'token': newAccessToken,
       };
 
       handleResponse(res, data);

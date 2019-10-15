@@ -59,6 +59,21 @@ class Token {
     });
   }
 
+  static refreshAccessToken(token) {
+    return new Promise((resolve, reject) => {
+        db
+          .first()
+          .from(TABLE_NAME)
+          .where('token', '=', token)
+          .then((rows) => {
+            const userID = rows['user_id'];
+            const token = Token.generateAccessToken(userID);
+            resolve(token);
+          })
+          .catch(err => reject(err));
+    });
+  }
+
   static updateRefreshToken(userID, refreshToken) {
     return new Promise((resolve, reject) => {
       const newToken = Token.generateRefreshToken();
