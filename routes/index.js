@@ -10,7 +10,6 @@ router.get('/', (req, res) => {
 });
 
 router.use('/auth', require('./auth'));
-//router.use('/posts',         requireAuth, require('./posts'));
 router.use('/users',         requireAuth, require('./users'));
 router.use('/games',         requireAuth, require('./games'));
 router.use('/tags',          requireAuth, require('./tags'));
