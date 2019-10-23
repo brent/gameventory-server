@@ -128,6 +128,8 @@ db.schema.hasTable('users_lists').then((exists) => {
         t.uuid('user_id').references('id').inTable('users').notNullable();
         t.timestamp('created_at').defaultTo(db.fn.now());
         t.timestamp('modified_at').defaultTo(db.fn.now());
+        t.index(['user_id', 'list_id']);
+        t.unique(['user_id', 'list_id']);
     });
   }
 });
