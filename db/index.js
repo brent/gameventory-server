@@ -104,4 +104,51 @@ db.schema.hasTable('users_games_tags').then((exists) => {
   }
 });
 
+db.schema.hasTable('lists').then((exists) => {
+  if (!exists) {
+    return db.schema
+      .raw('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"')
+      .createTable('lists', t => {
+        t.uuid('id').notNullable().primary().defaultTo(db.raw("uuid_generate_v4()"));
+        t.text('list_name').notNullable();
+        t.timestamp('created_at').defaultTo(db.fn.now());
+        t.timestamp('modified_at').defaultTo(db.fn.now());
+        t.index('list_name');
+    });
+  }
+});
+
+db.schema.hasTable('users_lists').then((exists) => {
+  if (!exists) {
+    return db.schema
+      .raw('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"')
+      .createTable('users_lists', t => {
+        t.uuid('id').notNullable().primary().defaultTo(db.raw("uuid_generate_v4()"));
+        t.uuid('list_id').references('id').inTable('lists').notNullable();
+        t.uuid('user_id').references('id').inTable('users').notNullable();
+        t.timestamp('created_at').defaultTo(db.fn.now());
+        t.timestamp('modified_at').defaultTo(db.fn.now());
+        t.index(['user_id', 'list_id']);
+        t.unique(['user_id', 'list_id']);
+    });
+  }
+});
+
+db.schema.hasTable('users_lists_games').then((exists) => {
+  if (!exists) {
+    return db.schema
+      .raw('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"')
+      .createTable('users_lists_games', t => {
+        t.uuid('id').notNullable().primary().defaultTo(db.raw("uuid_generate_v4()"));
+        t.uuid('user_id').references('id').inTable('users').notNullable();
+        t.uuid('game_id').references('id').inTable('games').notNullable();
+        t.uuid('list_id').references('id').inTable('lists').notNullable();
+        t.timestamp('created_at').defaultTo(db.fn.now());
+        t.timestamp('modified_at').defaultTo(db.fn.now());
+        t.index(['user_id', 'game_id', 'list_id']);
+        t.unique(['user_id', 'game_id', 'list_id']);
+    });
+  }
+});
+
 module.exports = db;
