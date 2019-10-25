@@ -10,9 +10,6 @@ router.get('/', (req, res) => {
     .catch(err => next(err));
 });
 
-router.get('/:id', (req, res) => {
-});
-
 router.post('/', (req, res, next) => {
   const userID = req.body.userID;
   const listID = req.body.listID;
@@ -22,6 +19,23 @@ router.post('/', (req, res, next) => {
     listID: listID,
     userID: userID,
     listName: listName,
+  })
+    .then(data => handleResponse(res, data))
+    .catch(err => next(err));
+});
+
+router.get('/:id', (req, res) => {
+});
+
+router.post('/:id', (req, res, next) => {
+  const userID = req.body.userID;
+  const gameID = req.body.gameID;
+  const listID = req.params.id;
+
+  List.addGameToListForUser({
+    userID: userID,
+    listID: listID,
+    gameID: gameID,
   })
     .then(data => handleResponse(res, data))
     .catch(err => next(err));

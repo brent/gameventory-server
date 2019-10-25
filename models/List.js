@@ -3,6 +3,7 @@
 const db = require('../db');
 const tableName = 'lists';
 const joinTableName = 'users_lists';
+const gamesJoinTableName = 'users_lists_games';
 
 class List {
   static getAll() {
@@ -79,6 +80,23 @@ class List {
         .join(tableName, `${tableName}.id`, `${joinTableName}.list_id`)
         .distinct()
         .then(rows => resolve(rows))
+        .catch(err => reject(err));
+    });
+  }
+
+  static addGameToListForUser(params) {
+    const { gameID, listID, userID } = params;
+
+    return new Promise((resolve, reject) => {
+      db
+        .insert({
+          user_id: userID,
+          list_id: listID,
+          game_id: gameID,
+        })
+        .into(gamesJoinTableName)
+        .returning('*')
+        .then(rows => resolve(rows[0]))
         .catch(err => reject(err));
     });
   }
