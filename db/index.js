@@ -140,7 +140,6 @@ db.schema.hasTable('users_lists_games').then((exists) => {
       .raw('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"')
       .createTable('users_lists_games', t => {
         t.uuid('id').notNullable().primary().defaultTo(db.raw("uuid_generate_v4()"));
-        t.text('list_name').notNullable();
         t.uuid('user_id').references('id').inTable('users').notNullable();
         t.uuid('game_id').references('id').inTable('games').notNullable();
         t.uuid('list_id').references('id').inTable('lists').notNullable();
