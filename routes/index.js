@@ -14,7 +14,6 @@ router.use('/users',         requireAuth, require('./users'));
 router.use('/games',         requireAuth, require('./games'));
 router.use('/tags',          requireAuth, require('./tags'));
 router.use('/lists',         requireAuth, require('./lists'));
-router.use('/gameventories', requireAuth, require('./gameventories'));
 
 router.use(errorHandler);
 
