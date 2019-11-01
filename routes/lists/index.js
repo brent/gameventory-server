@@ -24,7 +24,16 @@ router.post('/', (req, res, next) => {
     .catch(err => next(err));
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:id', (req, res, next) => {
+  const userID = req.decoded.user_id;
+  const listID = req.params.id
+
+  List.getGamesWithTagsInListForUser({
+    userID: userID,
+    listID: listID,
+  })
+    .then(data => handleResponse(res, data))
+    .catch(err => next(err));
 });
 
 router.post('/:id', (req, res, next) => {

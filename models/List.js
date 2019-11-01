@@ -100,6 +100,46 @@ class List {
         .catch(err => reject(err));
     });
   }
+
+  static getGamesWithTagsInListForUser(params) {
+    const { userID, listID } = params;
+
+    return new Promise((resolve, reject) => {
+      db
+        .raw(`
+          SELECT
+            games.*,
+            (
+              SELECT
+                json_agg(ts) as tags
+              FROM
+                (
+                  SELECT tags.*
+                  FROM
+                    users_games_tags
+                  INNER JOIN
+                    tags ON users_games_tags.tag_id = tags.id
+                  WHERE
+                    users_games_tags.game_id = users_lists_games.game_id
+                  AND
+                    users_games_tags.user_id = users_lists_games.user_id
+                  ORDER BY
+                    tags.tag_name
+                ) as ts
+              ) as tags
+          FROM
+            users_lists_games
+          INNER JOIN
+            games ON games.id = users_lists_games.game_id
+          WHERE
+            users_lists_games.user_id = :user_id
+          AND
+            users_lists_games.list_id = :list_id
+        `, { user_id: userID, list_id: listID })
+        .then(resp => resolve(resp.rows))
+        .catch(err => reject(err));
+    });
+  }
 }
 
 module.exports = List;
