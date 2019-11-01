@@ -3,7 +3,7 @@
 const router = require('express').Router();
 const User = require('../../models/User');
 const Tag = require('../../models/Tag');
-const Gameventory = require('../../models/Gameventory');
+const Game = require('../../models/Game');
 const handleResponse = require('../routeHelpers').handleResponse;
 
 router.get('/', (req, res) => {
@@ -24,17 +24,20 @@ router.get('/:id/tags', (req, res) => {
     .catch(err => console.log(err));
 });
 
-router.get('/:id/games', (req, res) => {
-  Gameventory.getForUserWithTags(req.params.id)
+router.get('/:id/games', (req, res, next) => {
+  Game.getAllForUserWithTags({ userID: req.params.id })
     .then(data => handleResponse(res, data))
-    .catch(err => console.log(err));
+    .catch(err => next(err));
 });
 
 router.post('/games', (req, res, next) => {
-  const userID = req.body.userID;
+  const userID = req.decoded.user_id;
   const gameID = req.body.gameID;
 
-  Gameventory.addGameForUser(gameID, userID)
+  Game.addOneForUser({ 
+    gameID: gameID,
+    userID: userID,
+  })
     .then(data => handleResponse(res, data))
     .catch(err => next(err));
 });
