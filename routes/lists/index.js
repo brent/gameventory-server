@@ -11,7 +11,7 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res, next) => {
-  const userID = req.body.userID;
+  const userID = req.decoded.user_id;
   const listID = req.body.listID;
   const listName = req.body.listName;
 
@@ -37,7 +37,7 @@ router.get('/:id', (req, res, next) => {
 });
 
 router.post('/:id', (req, res, next) => {
-  const userID = req.body.userID;
+  const userID = req.decoded.user_id;
   const gameID = req.body.gameID;
   const listID = req.params.id;
 

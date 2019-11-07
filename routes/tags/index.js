@@ -18,7 +18,7 @@ router.get('/:id', (req, res) => {
 
 router.post('/', (req, res, next) => {
   const tagName = req.body.tagName;
-  const userID = req.body.userID;
+  const userID = req.decoded.user_id;
   const gameID = req.body.gameID;
 
   Tag.createTag(tagName)
