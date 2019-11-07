@@ -10,7 +10,7 @@ const requireAuth = (req, res, next) => {
       next();
     })
     .catch(err => {
-      err.statusCode = 403;
+      err.statusCode = 401;
       next(err);
     });
 }
