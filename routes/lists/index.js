@@ -36,7 +36,7 @@ router.get('/:id', (req, res, next) => {
     .catch(err => next(err));
 });
 
-router.post('/:id', (req, res, next) => {
+router.patch('/:id', (req, res, next) => {
   const userID = req.decoded.user_id;
   const gameID = req.body.gameID;
   const listID = req.params.id;

@@ -54,7 +54,7 @@ router.post('/', (req, res, next) => {
     .catch(err => next(err));
 });
 
-router.put('/:id', (req, res, next) => {
+router.patch('/:id', (req, res, next) => {
   const params = { 
     id: req.params.id, 
     username: req.body.username,
