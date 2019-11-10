@@ -125,7 +125,7 @@ class Game {
                   AND
                     users_games_tags.user_id = users_games.user_id
                   ORDER BY
-                    tags.tag_name
+                    tags.name
                 ) as ts
               ) as tags
           FROM

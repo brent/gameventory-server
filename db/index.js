@@ -79,10 +79,10 @@ db.schema.hasTable('tags').then((exists) => {
       .raw('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"')
       .createTable('tags', t => {
         t.uuid('id').notNullable().primary().defaultTo(db.raw("uuid_generate_v4()"));
-        t.text('tag_name').unique().notNullable();
+        t.text('name').unique().notNullable();
         t.timestamp('created_at').defaultTo(db.fn.now());
         t.timestamp('modified_at').defaultTo(db.fn.now());
-        t.index('tag_name');
+        t.index('name');
     });
   }
 });
@@ -110,10 +110,10 @@ db.schema.hasTable('lists').then((exists) => {
       .raw('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"')
       .createTable('lists', t => {
         t.uuid('id').notNullable().primary().defaultTo(db.raw("uuid_generate_v4()"));
-        t.text('list_name').notNullable();
+        t.text('name').notNullable();
         t.timestamp('created_at').defaultTo(db.fn.now());
         t.timestamp('modified_at').defaultTo(db.fn.now());
-        t.index('list_name');
+        t.index('name');
     });
   }
 });

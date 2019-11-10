@@ -46,7 +46,7 @@ class Tag {
     return new Promise((resolve, reject) => {
       db
         .first()
-        .where('tag_name', '=', tagName)
+        .where('name', '=', tagName)
         .from(tableName)
         .then(rows => resolve(rows))
         .catch(err => reject(err));
@@ -56,7 +56,7 @@ class Tag {
   static createTag(tagName) {
     return new Promise((resolve, reject) => {
       db
-        .insert({ tag_name: tagName })
+        .insert({ name: tagName })
         .into(tableName)
         .returning('*')
         .then(rows => resolve(rows[0]))

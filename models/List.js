@@ -24,7 +24,7 @@ class List {
 
     return new Promise((resolve, reject) => {
       db
-        .insert({ list_name: listName })
+        .insert({ name: listName })
         .into(tableName)
         .returning('*')
         .then(rows => resolve(rows[0]))
@@ -39,7 +39,9 @@ class List {
       userID,
     } = params;
 
-    function addListToUser() {
+    function addListToUser(params) {
+      const { listID, userID } = params;
+
       return new Promise((resolve, reject) => {
         db
           .insert({
@@ -53,16 +55,16 @@ class List {
       });
     }
 
-    if (listID === null) {
+    if (!listID) {
       return new Promise((resolve, reject) => {
         List.create({ listName: listName })
-          .then(() => addListToUser())
-          .then(list => resolve(list))
+          .then((res) => addListToUser({ listID: res.id, userID: userID }))
+          .then((list) => resolve(list))
           .catch(err => reject(err));
       })
     } else {
       return new Promise((resolve, reject) => {
-        addListToUser()
+        addListToUser({ listID: listID, userID: userID })
           .then(list => resolve(list))
           .catch(err => reject(err));
       });
@@ -124,7 +126,7 @@ class List {
                   AND
                     users_games_tags.user_id = users_lists_games.user_id
                   ORDER BY
-                    tags.tag_name
+                    tags.name
                 ) as ts
               ) as tags
           FROM
