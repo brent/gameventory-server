@@ -126,6 +126,7 @@ db.schema.hasTable('users_lists').then((exists) => {
         t.uuid('id').notNullable().primary().defaultTo(db.raw("uuid_generate_v4()"));
         t.uuid('list_id').references('id').inTable('lists').notNullable();
         t.uuid('user_id').references('id').inTable('users').notNullable();
+        t.text('list_description');
         t.timestamp('created_at').defaultTo(db.fn.now());
         t.timestamp('modified_at').defaultTo(db.fn.now());
         t.index(['user_id', 'list_id']);

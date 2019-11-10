@@ -36,17 +36,19 @@ class List {
     const {
       listID,
       listName,
+      listDescription,
       userID,
     } = params;
 
     function addListToUser(params) {
-      const { listID, userID } = params;
+      const { listID, userID, listDescription } = params;
 
       return new Promise((resolve, reject) => {
         db
           .insert({
             list_id: listID,
             user_id: userID,
+            list_description: listDescription,
           })
           .into(joinTableName)
           .returning('*')
@@ -58,13 +60,21 @@ class List {
     if (!listID) {
       return new Promise((resolve, reject) => {
         List.create({ listName: listName })
-          .then((res) => addListToUser({ listID: res.id, userID: userID }))
+          .then((res) => addListToUser({
+            listID: res.id,
+            userID: userID,
+            listDescription: listDescription,
+          }))
           .then((list) => resolve(list))
           .catch(err => reject(err));
       })
     } else {
       return new Promise((resolve, reject) => {
-        addListToUser({ listID: listID, userID: userID })
+        addListToUser({
+          listID: listID,
+          userID: userID,
+          listDescription: listDescription,
+        })
           .then(list => resolve(list))
           .catch(err => reject(err));
       });

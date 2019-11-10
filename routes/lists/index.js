@@ -14,11 +14,13 @@ router.post('/', (req, res, next) => {
   const userID = req.decoded.user_id;
   const listID = req.body.listID;
   const listName = req.body.listName;
+  const listDescription = req.body.listDescription;
 
   List.createListForUser({
     listID: listID,
     userID: userID,
     listName: listName,
+    listDescription: listDescription,
   })
     .then(data => handleResponse(res, data))
     .catch(err => next(err));
