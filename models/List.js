@@ -86,12 +86,11 @@ class List {
 
     return new Promise((resolve, reject) => {
       db
-        .select(`${tableName}`)
+        .select(`${tableName}.*`)
         .where('user_id', '=', userID)
         .from(joinTableName)
         .join(tableName, `${tableName}.id`, `${joinTableName}.list_id`)
-        .distinct()
-        .then(rows => resolve(rows))
+        .then(res => resolve(res))
         .catch(err => reject(err));
     });
   }
