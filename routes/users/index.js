@@ -4,6 +4,7 @@ const router = require('express').Router();
 const User = require('../../models/User');
 const Tag = require('../../models/Tag');
 const Game = require('../../models/Game');
+const List = require('../../models/List');
 const handleResponse = require('../routeHelpers').handleResponse;
 
 router.get('/', (req, res) => {
@@ -26,6 +27,21 @@ router.get('/:id/tags', (req, res) => {
 
 router.get('/:id/games', (req, res, next) => {
   Game.getAllForUserWithTags({ userID: req.params.id })
+    .then(data => handleResponse(res, data))
+    .catch(err => next(err));
+});
+
+router.get('/:id/lists', (req, res, next) => {
+  List.getAllForUser({ userID: req.params.id })
+    .then(data => handleResponse(res, data))
+    .catch(err => next(err));
+});
+
+router.get('/:userID/lists/:listID', (req, res, next) => {
+  List.getGamesWithTagsInListForUser({
+    userID: req.params.userID,
+    listID: req.params.listID,
+  })
     .then(data => handleResponse(res, data))
     .catch(err => next(err));
 });
