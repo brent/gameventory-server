@@ -115,7 +115,7 @@ class List {
   static getGamesWithTagsInListForUser(params) {
     const { userID, listID } = params;
 
-    return new Promise((resolve, reject) => {
+    const listGames = new Promise((resolve, reject) => {
       db
         .raw(`
           SELECT
@@ -147,7 +147,27 @@ class List {
           AND
             users_lists_games.list_id = :list_id
         `, { user_id: userID, list_id: listID })
-        .then(resp => resolve(resp.rows))
+        .then(res => { resolve(res.rows) })
+        .catch(err => reject(err));
+    });
+
+    const listName = new Promise((resolve, reject) => {
+      db
+        .select(`${tableName}.*`)
+        .where('id', '=', listID)
+        .from(tableName)
+        .then(res => resolve(res))
+        .catch(err => reject(err));
+    });
+
+    return new Promise((resolve, reject) => {
+      Promise.all([listName, listGames])
+        .then((values) => {
+          resolve({
+            ...values[0][0],
+            games: values[1],
+          });
+        })
         .catch(err => reject(err));
     });
   }
