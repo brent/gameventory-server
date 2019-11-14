@@ -5,6 +5,7 @@ const express = require('express');
 const app = express();
 const port = process.env.PORT || 3000;
 const cors = require('cors');
+const db = require('./db');
 
 app.disable('x-powered-by');
 

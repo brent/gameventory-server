@@ -114,7 +114,27 @@ db.schema.hasTable('lists').then((exists) => {
         t.timestamp('created_at').defaultTo(db.fn.now());
         t.timestamp('modified_at').defaultTo(db.fn.now());
         t.index('name');
-    });
+        t.unique('name');
+      })
+      .then(() => {
+        (function bootstrapLists() {
+          let promises = [];
+
+          ['Playing', 'Backlog', 'Finished'].forEach((listName) => {
+            promises.push(new Promise((resolve, reject) => {
+              db
+                .insert({ name: listName })
+                .into('lists')
+                .then(() => resolve(true))
+                .catch(err => reject(new Error(`${listName} list already exists`)));
+            }));
+          });
+
+          Promise.all(promises).then(() => {
+            console.log('list bootstrap complete');
+          });
+        })();
+      });
   }
 });
 
