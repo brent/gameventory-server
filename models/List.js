@@ -86,7 +86,7 @@ class List {
 
     return new Promise((resolve, reject) => {
       db
-        .select(`${tableName}.*`)
+        .select(`*`)
         .where('user_id', '=', userID)
         .from(joinTableName)
         .join(tableName, `${tableName}.id`, `${joinTableName}.list_id`)
@@ -160,12 +160,26 @@ class List {
         .catch(err => reject(err));
     });
 
+    const listDescription = new Promise((resolve, reject) => {
+      db
+        .select(`${joinTableName}.list_description`)
+        .where('list_id', '=', listID)
+        .from(joinTableName)
+        .then(res => resolve(res))
+        .catch(err => reject(err));
+    });
+
     return new Promise((resolve, reject) => {
-      Promise.all([listName, listGames])
-        .then((values) => {
+      Promise.all([listName, listGames, listDescription])
+        .then((promises) => {
+          const listMeta = {
+            ...promises[0][0],
+            ...promises[2][0],
+          };
+
           resolve({
-            ...values[0][0],
-            games: values[1],
+            ...listMeta,
+            games: promises[1],
           });
         })
         .catch(err => reject(err));
