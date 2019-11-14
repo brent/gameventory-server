@@ -2,6 +2,7 @@
 
 const db = require('../db');
 const bcrypt = require('bcrypt');
+const List = require('./List');
 
 const tableName = 'users';
 
@@ -51,10 +52,45 @@ class User {
             })
             .into(tableName)
             .returning(['id', 'username'])
-            .then(rows => resolve(rows[0]))
+            .then(rows => {
+              addDefaultListsToUser({ userID: rows[0]['id'] }).then((res) => {
+                resolve(rows[0]);
+              });
+            })
             .catch(err => reject(err));
         });
     });
+
+    function addDefaultListsToUser(params) {
+      const { userID } = params;
+      let promises = [];
+
+      ['Playing', 'Backlog', 'Finished'].forEach((listName) => {
+        promises.push(new Promise((resolve, reject) => {
+          db
+            .first()
+            .from('lists')
+            .where('name', '=', listName)
+            .then((list) => { 
+              List.createListForUser({
+                listID: list.id,
+                listName: listName,
+                userID: userID,
+                listDescription: '',
+              })
+              .then(() => resolve(true))
+              .catch((err) => reject(err))
+            })
+            .catch((err) => reject(err));
+        }));
+      });
+
+      return new Promise((resolve, reject) => {
+        Promise.all(promises)
+          .then((promises) => resolve(promises))
+          .catch(err => reject(err));
+      });
+    }
   }
 
   static update(params) {
