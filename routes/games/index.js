@@ -52,18 +52,23 @@ router.post('/search', async (req, res, next) => {
           .then(response => {
             const gameData = response.data;
 
-            let gameSavePromises = gameData.map((game, i) => {
+            let useableGameData = [];
+            gameData.map((game, i) => {
               if (
-                !game.cover
+                game === undefined
+                || !game.cover
                 || !game.summary
                 || !game.name
                 || !game.first_release_date
                 || !game.id
               ) {
-                gameData.splice(i, 1);
                 return;
+              } else {
+                useableGameData.push(game);
               }
+            });
 
+            let gameSavePromises = useableGameData.map((game, i) => {
               const params = {
                 igdb_id: game.id,
                 igdb_name: game.name,
@@ -80,13 +85,13 @@ router.post('/search', async (req, res, next) => {
             });
 
             Promise.all(gameSavePromises).then((promises) => {
-              let data = promises.map((promise) => {
+              let promiseResults = promises.map((promise) => {
                 if (promise) {
                   return promise[0];
                 }
               });
 
-              handleResponse(res, data);
+              handleResponse(res, promiseResults);
             });
           });
       }
