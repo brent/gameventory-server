@@ -185,6 +185,19 @@ class List {
         .catch(err => reject(err));
     });
   }
+
+  static findByName(params) {
+    const { listName } = params;
+
+    return new Promise((resolve, reject) => {
+      db
+        .select(`*`)
+        .from(`${tableName}`)
+        .where('name', '=', listName)
+        .then((res) => resolve(res))
+        .catch((err) => reject(err));
+    });
+  }
 }
 
 module.exports = List;

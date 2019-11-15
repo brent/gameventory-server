@@ -37,13 +37,27 @@ router.get('/:id/lists', (req, res, next) => {
     .catch(err => next(err));
 });
 
-router.get('/:userID/lists/:listID', (req, res, next) => {
-  List.getGamesWithTagsInListForUser({
-    userID: req.params.userID,
-    listID: req.params.listID,
-  })
-    .then(data => handleResponse(res, data))
-    .catch(err => next(err));
+router.get('/:userID/lists/:listRef', (req, res, next) => {
+
+  if (!req.params.listRef.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i)) {
+    List.findByName({ listName: req.params.listRef })
+      .then((rows) => {
+        List.getGamesWithTagsInListForUser({
+          userID: req.params.userID,
+          listID: rows[0]['id'],
+        })
+          .then(data => handleResponse(res, data))
+          .catch(err => next(err));
+          })
+      .catch((err) => console.log(err))
+  } else {
+    List.getGamesWithTagsInListForUser({
+      userID: req.params.userID,
+      listID: req.params.listRef,
+    })
+      .then(data => handleResponse(res, data))
+      .catch(err => next(err));
+  }
 });
 
 router.post('/games', (req, res, next) => {
