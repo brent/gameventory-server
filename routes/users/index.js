@@ -32,7 +32,7 @@ router.get('/:id/games', (req, res, next) => {
 });
 
 router.get('/:id/lists', (req, res, next) => {
-  List.getAllForUser({ userID: req.params.id })
+  List.getAllForUserWithGames({ userID: req.params.id })
     .then(data => handleResponse(res, data))
     .catch(err => next(err));
 });

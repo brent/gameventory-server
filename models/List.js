@@ -95,6 +95,61 @@ class List {
     });
   }
 
+  static getAllForUserWithGames(params) {
+    const { userID } = params;
+
+    return new Promise((resolve, reject) => {
+      db
+        .select('*')
+        .from(gamesJoinTableName)
+        .where('user_id', '=', userID)
+        .then((games) => {
+          const listIDs = [...new Set(games.map(game => game.list_id))];
+          const promises = [];
+          listIDs.forEach((listID) => promises.push(getListName(listID)));
+
+          Promise.all(promises)
+            .then((lists) => {
+              const res = mapListsToGames(lists, games);
+              resolve(res);
+            });
+        })
+        .catch((err) => reject(err));
+    });
+
+    function mapListsToGames(lists, games) {
+      let response = [];
+
+      lists.forEach((list) => {
+        let gamesForList = [];
+
+        games.forEach((game, index) => {
+          if (game.list_id === list.id) {
+            gamesForList.push(game);
+          }
+        });
+
+        response.push({
+          ...list,
+          'games': gamesForList,
+        });
+      });
+
+      return response;
+    }
+
+    function getListName(listID) {
+      return new Promise((resolve, reject) => {
+        db
+          .select(`${tableName}.*`)
+          .where('id', '=', listID)
+          .from(tableName)
+          .then(rows => resolve(rows[0]))
+          .catch(err => reject(err));
+      });
+    }
+  }
+
   static addGameToListForUser(params) {
     const { gameID, listID, userID } = params;
 
