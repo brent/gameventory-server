@@ -43,13 +43,25 @@ router.patch('/:id', (req, res, next) => {
   const gameID = req.body.gameID;
   const listID = req.params.id;
 
+  console.log('userID', userID);
+  console.log('gameID', gameID);
+  console.log('listID', listID);
+
   List.addGameToListForUser({
     userID: userID,
     listID: listID,
     gameID: gameID,
   })
     .then(data => handleResponse(res, data))
-    .catch(err => next(err));
+    .catch((err) => {
+      List.moveGameToListForUser({
+        userID: userID,
+        listID: listID,
+        gameID: gameID,
+      })
+        .then((data) => handleResponse(res, data))
+        .catch((err) => handleResponse(err));
+    });
 });
 
 module.exports = router;

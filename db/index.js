@@ -167,7 +167,7 @@ db.schema.hasTable('users_lists_games').then((exists) => {
         t.timestamp('created_at').defaultTo(db.fn.now());
         t.timestamp('modified_at').defaultTo(db.fn.now());
         t.index(['user_id', 'game_id', 'list_id']);
-        t.unique(['user_id', 'game_id', 'list_id']);
+        t.unique(['user_id', 'game_id']);
     });
   }
 });

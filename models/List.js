@@ -136,6 +136,20 @@ class List {
     });
   }
 
+  static moveGameToListForUser(params) {
+    const { gameID, listID, userID } = params;
+
+    return new Promise((resolve, reject) => {
+      db
+        .update({ list_id: listID })
+        .where({ user_id: userID })
+        .andWhere({ game_id: gameID })
+        .from(gamesJoinTableName)
+        .then((res) => resolve(res))
+        .catch((err) => reject(err));
+    });
+  }
+
   static getGamesWithTagsInListForUser(params) {
     const { userID, listID } = params;
 
