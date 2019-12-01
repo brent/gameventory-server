@@ -42,7 +42,15 @@ router.post('/', (req, res, next) => {
     });
 });
 
-router.put('/:id', (req, res) => {
+router.patch('/:id', (req, res, next) => {
+  console.log(req.body);
+  const tagID = req.params.id;
+  const gameID = req.body.gameID;
+  const userID = req.decoded.user_id;
+
+  Tag.removeTagFromGameForUser(tagID, gameID, userID)
+    .then((data) => handleResponse(res, data))
+    .catch((err) => next(err));
 });
 
 module.exports = router;

@@ -78,6 +78,22 @@ class Tag {
         .catch(err => reject(err));
     });
   }
+
+  static removeTagFromGameForUser(tagID, gameID, userID) {
+    return new Promise((resolve, reject) => {
+      db
+        .del()
+        .from(joinTableName)
+        .where({
+          tag_id: tagID,
+          game_id: gameID,
+          user_id: userID,
+        })
+        .returning('*')
+        .then(row => resolve(row[0]))
+        .catch(err => reject(err));
+    });
+  }
 }
 
 module.exports = Tag;
