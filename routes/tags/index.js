@@ -4,10 +4,18 @@ const router = require('express').Router();
 const Tag = require('../../models/Tag');
 const handleResponse = require('../routeHelpers').handleResponse;
 
-router.get('/', (req, res) => {
-  Tag.getAll()
-    .then(data => handleResponse(res, data))
-    .catch(err => console.log(err));
+router.get('/', (req, res, next) => {
+  if (req.query) {
+    const tagName = req.query.q;
+
+    Tag.searchByName(tagName)
+      .then((data) => handleResponse(res, data))
+      .catch((err) => next(err));
+  } else {
+    Tag.getAll()
+      .then(data => handleResponse(res, data))
+      .catch(err => next(err));
+  }
 });
 
 router.get('/:id', (req, res) => {
@@ -43,7 +51,6 @@ router.post('/', (req, res, next) => {
 });
 
 router.patch('/:id', (req, res, next) => {
-  console.log(req.body);
   const tagID = req.params.id;
   const gameID = req.body.gameID;
   const userID = req.decoded.user_id;

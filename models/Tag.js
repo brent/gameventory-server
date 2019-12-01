@@ -53,6 +53,16 @@ class Tag {
     });
   }
 
+  static searchByName(tagName) {
+    return new Promise((resolve, reject) => {
+      db
+        .where('name', 'like', `%${tagName}%`)
+        .from(tableName)
+        .then(rows => resolve(rows))
+        .catch(err => reject(err));
+    });
+  }
+
   static createTag(tagName) {
     return new Promise((resolve, reject) => {
       db
